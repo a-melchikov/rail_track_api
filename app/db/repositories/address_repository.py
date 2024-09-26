@@ -1,7 +1,9 @@
 import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from db import Address, db_helper
+from schemas.address import AddressCreate
 
 
 class AddressRepository:
@@ -10,19 +12,9 @@ class AddressRepository:
 
     async def create_address(
         self,
-        country: str,
-        city: str,
-        street: str | None,
-        house: str,
-        apartment: str,
+        address_in: AddressCreate,
     ) -> Address:
-        address = Address(
-            country=country,
-            city=city,
-            street=street,
-            house=house,
-            apartment=apartment,
-        )
+        address = Address(**address_in.model_dump())
         self.session.add(address)
         await self.session.commit()
         return address
@@ -41,7 +33,7 @@ async def main():
         ]
 
         for data in addresses_data:
-            await address_repo.create_address(*data)
+            await address_repo.create_address(Address(*data))
 
         await session.commit()
 
