@@ -13,6 +13,10 @@ class AddressCreate(AddressBase):
     pass
 
 
-class Address(AddressBase):
+class AddressUpdate(AddressBase):
+    pass
+
+
+class AddressOut(AddressBase):
     model_config = ConfigDict(from_attributes=True)
     id: int

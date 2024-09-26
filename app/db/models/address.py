@@ -13,7 +13,7 @@ class Address(Base):
     apartment: Mapped[str | None] = mapped_column(String(10))
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}(country={self.country}, city={self.city},street={self.street}, house={self.house}, apartment={self.apartment})"
+        return f"{self.__class__.__name__}(id={self.id}, country={self.country}, city={self.city},street={self.street}, house={self.house}, apartment={self.apartment})"
 
     def __repr__(self) -> str:
         return str(self)
