@@ -15,7 +15,7 @@ class DatabaseHelper:
             url=url,
             echo=echo,
         )
-        self._session_factory = async_sessionmaker(
+        self.session_factory = async_sessionmaker(
             bind=self._engine,
             autoflush=False,
             autocommit=False,
