@@ -24,7 +24,7 @@ class DatabaseHelper:
 
     def _get_scoped_session(self):
         session = async_scoped_session(
-            session_factory=self._session_factory,
+            session_factory=self.session_factory,
             scopefunc=current_task,
         )
         return session
