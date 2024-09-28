@@ -17,7 +17,11 @@ class StationRepository:
     ) -> Station:
         station = Station(**station_in.model_dump())
         self.session.add(station)
-        await self.session.commit()
+        try:
+            await self.session.commit()
+        except Exception as e:
+            await self.session.rollback()
+            raise e
         return station
 
     async def get_station_by_id(
@@ -38,7 +42,11 @@ class StationRepository:
     ) -> Station:
         for name, value in station_update.model_dump(exclude_unset=True).items():
             setattr(station, name, value)
-        await self.session.commit()
+        try:
+            await self.session.commit()
+        except Exception as e:
+            await self.session.rollback()
+            raise e
         return station
 
     async def delete_station(
@@ -46,7 +54,11 @@ class StationRepository:
         station: Station,
     ) -> None:
         await self.session.delete(station)
-        await self.session.commit()
+        try:
+            await self.session.commit()
+        except Exception as e:
+            await self.session.rollback()
+            raise e
 
 
 async def main():

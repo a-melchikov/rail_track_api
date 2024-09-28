@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 
 from db import db_helper
 from db.repositories import StationRepository
@@ -29,8 +30,15 @@ async def create_station(
     station_in: StationCreate,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ) -> Station:
-    station_repo = StationRepository(session=session)
-    return await station_repo.create_station(station_in == station_in)
+    station_repo = StationRepository(session)
+    try:
+        new_station = await station_repo.create_station(station_in)
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Station already exists."
+        )
+    return new_station
 
 
 @router.put("/{station_id}/", response_model=Station)

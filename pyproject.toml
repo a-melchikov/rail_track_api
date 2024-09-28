@@ -15,9 +15,11 @@ pydantic = "^2.9.2"
 psycopg2-binary = "^2.9.9"
 pydantic-settings = "^2.5.2"
 uvicorn = "^0.30.6"
+orjson = "^3.10.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
+ipython = "^8.27.0"
 
 [build-system]
 requires = ["poetry-core"]
