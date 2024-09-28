@@ -36,7 +36,7 @@ class AddressRepository:
     async def update_address(
         self, address: Address, address_update: AddressUpdate
     ) -> Address:
-        for name, value in address_update.model_dump().items():
+        for name, value in address_update.model_dump(exclude_unset=True).items():
             setattr(address, name, value)
         await self.session.commit()
         return address

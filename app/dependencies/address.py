@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Path, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db import Address, db_helper, AddressRepository
+from db import Address, db_helper
+from db.repositories import AddressRepository
 
 
 async def address_by_id(

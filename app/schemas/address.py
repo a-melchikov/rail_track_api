@@ -10,13 +10,29 @@ class AddressBase(BaseModel):
 
 
 class AddressCreate(AddressBase):
-    pass
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "country": "Russia",
+                    "city": "Moscow",
+                    "street": "Lenin Street",
+                    "house": "1A",
+                    "apartment": "1",
+                },
+            ]
+        }
+    }
 
 
-class AddressUpdate(AddressBase):
-    pass
+class AddressUpdate(BaseModel):
+    country: str | None = None
+    city: str | None = None
+    street: str | None = None
+    house: str | None = None
+    apartment: str | None = None
 
 
-class AddressOut(AddressBase):
+class Address(AddressBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
