@@ -34,6 +34,9 @@ class DatabaseHelper:
         yield session
         await session.close()
 
+    async def dispose(self) -> None:
+        await self._engine.dispose()
+
 
 db_helper = DatabaseHelper(
     url=get_db_url(),
