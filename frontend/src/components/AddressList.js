@@ -5,11 +5,13 @@ const AddressList = () => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingAddressId, setEditingAddressId] = useState(null); // Для отслеживания редактируемого адреса
+  const [editingAddress, setEditingAddress] = useState({}); // Для хранения редактируемого адреса
 
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/v1/addresses");
+        const response = await fetch("http://localhost:8000/api/v1/addresses/");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -32,7 +34,7 @@ const AddressList = () => {
   const handleDeleteAddress = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/v1/addresses/${id}`,
+        `http://localhost:8000/api/v1/addresses/${id}/`,
         {
           method: "DELETE",
         }
@@ -51,6 +53,44 @@ const AddressList = () => {
     }
   };
 
+  const handleEditAddress = (id) => {
+    // Найдем адрес для редактирования и установим его в состояние
+    const addressToEdit = addresses.find((address) => address.id === id);
+    setEditingAddressId(id);
+    setEditingAddress({ ...addressToEdit });
+  };
+
+  const handleUpdateAddress = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/v1/addresses/${editingAddressId}/`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editingAddress),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const updatedAddress = await response.json();
+      setAddresses((prevAddresses) =>
+        prevAddresses.map((address) =>
+          address.id === editingAddressId ? updatedAddress : address
+        )
+      );
+
+      setEditingAddressId(null); // Сбрасываем редактируемый адрес
+      setEditingAddress({});
+    } catch (error) {
+      console.error("Ошибка при обновлении адреса:", error);
+    }
+  };
+
   if (loading) {
     return <div>Загрузка...</div>;
   }
@@ -66,15 +106,81 @@ const AddressList = () => {
       <ul>
         {addresses.map((address) => (
           <li key={address.id}>
-            <div>
-              <strong>ID: {address.id}</strong> - 
-                Адрес: {address.country}, г. {address.city},{" "}
-                ул. {address.street}, д. {address.house},{" "}
-                кв. {address.apartment}
-            </div>
-            <button onClick={() => handleDeleteAddress(address.id)}>
-              Удалить
-            </button>
+            {editingAddressId === address.id ? (
+              <div>
+                <input
+                  type="text"
+                  value={editingAddress.country}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      country: e.target.value,
+                    })
+                  }
+                  placeholder="Страна"
+                />
+                <input
+                  type="text"
+                  value={editingAddress.city}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      city: e.target.value,
+                    })
+                  }
+                  placeholder="Город"
+                />
+                <input
+                  type="text"
+                  value={editingAddress.street}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      street: e.target.value,
+                    })
+                  }
+                  placeholder="Улица"
+                />
+                <input
+                  type="text"
+                  value={editingAddress.house}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      house: e.target.value,
+                    })
+                  }
+                  placeholder="Дом"
+                />
+                <input
+                  type="text"
+                  value={editingAddress.apartment}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      apartment: e.target.value,
+                    })
+                  }
+                  placeholder="Квартира"
+                />
+                <button onClick={handleUpdateAddress}>Сохранить</button>
+                <button onClick={() => setEditingAddressId(null)}>
+                  Отмена
+                </button>
+              </div>
+            ) : (
+              <div>
+                <strong>ID: {address.id}</strong> - Адрес: {address.country}, г.{" "}
+                {address.city}, ул. {address.street}, д. {address.house}, кв.{" "}
+                {address.apartment}
+                <button onClick={() => handleEditAddress(address.id)}>
+                  Редактировать
+                </button>
+                <button onClick={() => handleDeleteAddress(address.id)}>
+                  Удалить
+                </button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

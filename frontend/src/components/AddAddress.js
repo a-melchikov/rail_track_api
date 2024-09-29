@@ -13,7 +13,7 @@ const AddAddress = ({ onAdd }) => {
     const newAddress = { country, city, street, house, apartment };
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/addresses", {
+      const response = await fetch("http://localhost:8000/api/v1/addresses/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
