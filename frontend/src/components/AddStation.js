@@ -1,62 +1,69 @@
 import React, { useState } from "react";
-import axios from "axios";
 
-const AddStation = () => {
-  const [name, setName] = useState("");
-  const [taxId, setTaxId] = useState("");
-  const [addressId, setAddressId] = useState("");
+const AddStation = ({ onAddStation }) => {
+  const [newStation, setNewStation] = useState({
+    name: "",
+    tax_id: "",
+    address_id: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewStation((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const newStation = {
-        name,
-        tax_id: taxId,
-        address_id: parseInt(addressId),
-      };
-      await axios.post("http://localhost:8000/api/v1/stations/", newStation);
-      alert("Station added successfully");
+      const response = await fetch("http://localhost:8000/api/v1/stations/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newStation),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const createdStation = await response.json();
+      onAddStation(createdStation);
+      setNewStation({ name: "", tax_id: "", address_id: "" }); // сброс формы
     } catch (error) {
-      console.error("Failed to add station", error);
-      alert("Failed to add station");
+      console.error("Ошибка при добавлении вокзала:", error);
     }
   };
 
   return (
     <div>
-      <h2>Add New Station</h2>
+      <h3>Добавить новый вокзал</h3>
       <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Tax ID:
-          <input
-            type="text"
-            value={taxId}
-            onChange={(e) => setTaxId(e.target.value)}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Address ID:
-          <input
-            type="number"
-            value={addressId}
-            onChange={(e) => setAddressId(e.target.value)}
-            required
-          />
-        </label>
-        <br />
-        <button type="submit">Add Station</button>
+        <input
+          type="text"
+          name="name"
+          value={newStation.name}
+          onChange={handleInputChange}
+          placeholder="Название вокзала"
+          required
+        />
+        <input
+          type="text"
+          name="tax_id"
+          value={newStation.tax_id}
+          onChange={handleInputChange}
+          placeholder="Tax ID"
+          required
+        />
+        <input
+          type="text"
+          name="address_id"
+          value={newStation.address_id}
+          onChange={handleInputChange}
+          placeholder="ID адреса"
+          required
+        />
+        <button type="submit">Добавить вокзал</button>
       </form>
     </div>
   );
