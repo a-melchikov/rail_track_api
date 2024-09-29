@@ -1,11 +1,13 @@
 import asyncio
 
-from db import Address, db_helper
+from db import db_helper, Address
+from schemas.address import AddressOut
 from utils.repository import SQLAlchemyRepository
 
 
 class AddressRepository(SQLAlchemyRepository):
     model = Address
+    schema = AddressOut
 
 
 async def main():

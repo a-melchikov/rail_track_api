@@ -1,64 +1,51 @@
 import asyncio
 
+from pydantic import BaseModel
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from db import Station, db_helper
-from schemas.station import StationCreate, StationUpdate
+from db import db_helper, Station
+from schemas import station
+from schemas.station import StationOut, StationRelOut
+from utils.repository import SQLAlchemyRepository
 
 
-class StationRepository:
-    def __init__(self, session: AsyncSession):
-        self.session = session
+class StationRepository(SQLAlchemyRepository):
+    model: Station = Station
+    schema: StationOut = StationOut
+    schema_rel: StationRelOut = StationRelOut
 
-    async def create_station(
-        self,
-        station_in: StationCreate,
-    ) -> Station:
-        station = Station(**station_in.model_dump())
-        self.session.add(station)
-        try:
-            await self.session.commit()
-        except Exception as e:
-            await self.session.rollback()
-            raise e
-        return station
+    async def find_one(self, id: int) -> StationRelOut:
+        async with db_helper.session_factory() as session:
+            stmt = (
+                select(self.model)
+                .where(self.model.id == id)
+                .options(selectinload(self.model.address))
+            )
+            result = await session.execute(stmt)
+            station = result.scalar_one_or_none()
+            if not station:
+                raise ValueError(f"Station with id {id} not found")
+            return self.schema_rel.model_validate(station)
 
-    async def get_station_by_id(
-        self,
-        station_id: int,
-    ) -> Station | None:
-        return await self.session.get(Station, station_id)
+    async def find_all(self) -> list[BaseModel]:
+        async with db_helper.session_factory() as session:
+            stmt = select(self.model).options(selectinload(self.model.address)).order_by(self.model.id)
+            result = await session.execute(stmt)
+            stations = result.scalars().all()
+            return [
+                self.schema_rel.model_validate(station, from_attributes=True)
+                for station in stations
+            ]
 
-    async def get_all_stations(
-        self,
-    ) -> list[Station]:
-        stmt = select(Station).order_by(Station.id)
-        stations = await self.session.scalars(stmt)
-        return list(stations)
-
-    async def update_station(
-        self, station: Station, station_update: StationUpdate
-    ) -> Station:
-        for name, value in station_update.model_dump(exclude_unset=True).items():
-            setattr(station, name, value)
-        try:
-            await self.session.commit()
-        except Exception as e:
-            await self.session.rollback()
-            raise e
-        return station
-
-    async def delete_station(
-        self,
-        station: Station,
-    ) -> None:
-        await self.session.delete(station)
-        try:
-            await self.session.commit()
-        except Exception as e:
-            await self.session.rollback()
-            raise e
+    async def find_one_by_field(self, field: str, value) -> StationOut | None:
+        async with db_helper.session_factory() as session:
+            stmt = select(self.model).where(getattr(self.model, field) == value)
+            result = await session.execute(stmt)
+            station = result.scalar_one_or_none()
+            if station:
+                return self.schema.model_validate(station)
+            return None
 
 
 async def main():

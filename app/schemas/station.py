@@ -1,5 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from schemas.address import AddressOut
+
 
 class StationBase(BaseModel):
     name: str = Field(..., max_length=255)
@@ -20,3 +22,7 @@ class StationUpdate(BaseModel):
 class StationOut(StationBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+
+
+class StationRelOut(StationOut):
+    address: AddressOut

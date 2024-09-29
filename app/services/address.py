@@ -13,9 +13,8 @@ class AddressService:
         address_in: AddressCreate,
     ) -> AddressOut:
         try:
-            address_dict = address_in.model_dump()
-            address = await self.address_repo.add_one(address_dict)
-            return AddressOut(**address)
+            address = await self.address_repo.add_one(address_in)
+            return address
         except SQLAlchemyError as e:
             raise RuntimeError("Failed to create address") from e
 
@@ -24,7 +23,7 @@ class AddressService:
     ) -> list[AddressOut]:
         try:
             addresses = await self.address_repo.find_all()
-            return [AddressOut(**address) for address in addresses]
+            return addresses
         except SQLAlchemyError as e:
             raise RuntimeError("Failed to retrieve addresses") from e
 
@@ -34,7 +33,7 @@ class AddressService:
     ) -> AddressOut:
         try:
             address = await self.address_repo.find_one(id=address_id)
-            return AddressOut(**address)
+            return address
         except ValueError:
             raise HTTPException(
                 status_code=404, detail=f"Address with id {address_id} not found"
@@ -48,9 +47,8 @@ class AddressService:
         address_update: AddressUpdate,
     ) -> AddressOut:
         try:
-            address_dict = address_update.model_dump(exclude_unset=True)
-            address = await self.address_repo.update_one(address_id, address_dict)
-            return AddressOut(**address)
+            address = await self.address_repo.update_one(address_id, address_update)
+            return address
         except ValueError:
             raise HTTPException(
                 status_code=404, detail=f"Address with id {address_id} not found"
