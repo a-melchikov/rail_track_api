@@ -36,7 +36,7 @@ const AddStation = ({ onAddStation }) => {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h3>Добавить новый вокзал</h3>
       <form onSubmit={handleSubmit}>
         <input

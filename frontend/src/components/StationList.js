@@ -60,7 +60,7 @@ const StationList = () => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h2>Список вокзалов</h2>
       <AddStation onAdd={handleAddStation} />
       <ul>

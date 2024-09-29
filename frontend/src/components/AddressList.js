@@ -60,7 +60,7 @@ const AddressList = () => {
   }
 
   return (
-    <div>
+    <div className="container">
       <h2>Список адресов</h2>
       <AddAddress onAdd={handleAddAddress} />
       <ul>

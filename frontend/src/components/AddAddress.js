@@ -38,44 +38,46 @@ const AddAddress = ({ onAdd }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Добавить адрес</h3>
-      <input
-        type="text"
-        placeholder="Страна"
-        value={country}
-        onChange={(e) => setCountry(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Город"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Улица"
-        value={street}
-        onChange={(e) => setStreet(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Дом"
-        value={house}
-        onChange={(e) => setHouse(e.target.value)}
-        required
-      />
-      <input
-        type="text"
-        placeholder="Квартира"
-        value={apartment}
-        onChange={(e) => setApartment(e.target.value)}
-      />
-      <button type="submit">Добавить</button>
-    </form>
+    <div className="form-container">
+      <form onSubmit={handleSubmit}>
+        <h3>Добавить адрес</h3>
+        <input
+          type="text"
+          placeholder="Страна"
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Город"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Улица"
+          value={street}
+          onChange={(e) => setStreet(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Дом"
+          value={house}
+          onChange={(e) => setHouse(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Квартира"
+          value={apartment}
+          onChange={(e) => setApartment(e.target.value)}
+        />
+        <button type="submit">Добавить</button>
+      </form>
+    </div>
   );
 };
 

@@ -1,8 +1,9 @@
+// Пример для Home.js
 import React from "react";
 
 const Home = () => {
   return (
-    <div>
+    <div className="container">
       <h1>Добро пожаловать на страницу вокзалов</h1>
       <p>Здесь вы можете управлять вокзалами и адресами.</p>
       <p>

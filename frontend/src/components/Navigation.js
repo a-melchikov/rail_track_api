@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 const Navigation = () => {
   return (
     <nav>
-      <h1>Навигация</h1>
       <ul>
         <li>
           <Link to="/">Главная</Link>

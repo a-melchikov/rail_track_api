@@ -4,6 +4,7 @@ import Navigation from "./components/Navigation";
 import Home from "./components/Home";
 import StationList from "./components/StationList"; // предполагается, что у тебя уже есть этот компонент
 import AddressList from "./components/AddressList"; // создадим этот компонент позже
+import './styles.css';
 
 const App = () => {
   return (
