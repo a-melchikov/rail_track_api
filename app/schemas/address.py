@@ -33,6 +33,6 @@ class AddressUpdate(BaseModel):
     apartment: str | None = None
 
 
-class Address(AddressBase):
+class AddressOut(AddressBase):
     model_config = ConfigDict(from_attributes=True)
     id: int

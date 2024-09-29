@@ -17,6 +17,6 @@ class StationUpdate(BaseModel):
     address_id: int | None = None
 
 
-class Station(StationBase):
+class StationOut(StationBase):
     model_config = ConfigDict(from_attributes=True)
     id: int

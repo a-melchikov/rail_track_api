@@ -1,52 +1,11 @@
 import asyncio
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from db import Address, db_helper
-from schemas.address import AddressCreate, AddressUpdate
+from utils.repository import SQLAlchemyRepository
 
 
-class AddressRepository:
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
-    async def create_address(
-        self,
-        address_in: AddressCreate,
-    ) -> Address:
-        address = Address(**address_in.model_dump())
-        self.session.add(address)
-        await self.session.commit()
-        return address
-
-    async def get_address_by_id(
-        self,
-        address_id: int,
-    ) -> Address | None:
-        return await self.session.get(Address, address_id)
-
-    async def get_all_addresses(
-        self,
-    ) -> list[Address]:
-        stmt = select(Address).order_by(Address.id)
-        addresses = await self.session.scalars(stmt)
-        return list(addresses)
-
-    async def update_address(
-        self, address: Address, address_update: AddressUpdate
-    ) -> Address:
-        for name, value in address_update.model_dump(exclude_unset=True).items():
-            setattr(address, name, value)
-        await self.session.commit()
-        return address
-
-    async def delete_address(
-        self,
-        address: Address,
-    ) -> None:
-        await self.session.delete(address)
-        await self.session.commit()
+class AddressRepository(SQLAlchemyRepository):
+    model = Address
 
 
 async def main():
