@@ -1,25 +1,26 @@
 from abc import ABC, abstractmethod
 
+from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
 
-from db import db_helper
+from db import db_helper, Base
 
 
 class AbstractRepository(ABC):
     @abstractmethod
-    async def add_one(self, data: dict) -> dict:
+    async def add_one(self, model_in: BaseModel) -> BaseModel:
         raise NotImplementedError
 
     @abstractmethod
-    async def find_all(self) -> list:
+    async def find_all(self) -> list[BaseModel]:
         raise NotImplementedError
 
     @abstractmethod
-    async def find_one(self, **filter_by) -> dict:
+    async def find_one(self, **filter_by) -> BaseModel:
         raise NotImplementedError
 
     @abstractmethod
-    async def update_one(self, id: int, data: dict) -> dict:
+    async def update_one(self, id: int, model_update: BaseModel) -> BaseModel:
         raise NotImplementedError
 
     @abstractmethod
@@ -28,62 +29,57 @@ class AbstractRepository(ABC):
 
 
 class SQLAlchemyRepository(AbstractRepository):
-    model = None
+    model: Base
+    schema: BaseModel
 
-    async def add_one(self, data: dict) -> dict:
+    async def add_one(self, model_in: BaseModel) -> BaseModel:
         """Создает новую запись и возвращает ее"""
         async with db_helper.session_factory() as session:
-            columns = [col for col in self.model.__table__.columns]
-
-            stmt = insert(self.model).values(**data).returning(*columns)
-            res = await session.execute(stmt)
+            model_obj = self.model(**model_in.model_dump())
+            session.add(model_obj)
             await session.commit()
-            return res.mappings().one()
+            return self.schema.model_validate(model_obj, from_attributes=True)
 
-    async def find_all(self) -> list[dict]:
+    async def find_all(self) -> list[BaseModel]:
         """Возвращает все записи из таблицы"""
         async with db_helper.session_factory() as session:
             stmt = select(self.model).order_by(self.model.id)
-            res = await session.execute(stmt)
+            result = await session.execute(stmt)
+            models_obj = result.scalars().all()
             return [
-                {
-                    column: getattr(row.Address, column)
-                    for column in row.Address.__table__.columns.keys()
-                }
-                for row in res.all()
+                self.schema.model_validate(obj, from_attributes=True)
+                for obj in models_obj
             ]
 
-    async def find_one(self, **filter_by) -> dict:
+    async def find_one(self, **filter_by) -> BaseModel:
         """Возвращает одну запись, соответствующую фильтру"""
         async with db_helper.session_factory() as session:
             stmt = select(self.model).filter_by(**filter_by)
-            res = await session.execute(stmt)
-            result = res.mappings().one_or_none()
-            
+            result = await session.execute(stmt)
+            model_obj = result.scalar_one_or_none()
+
             if result is None:
                 raise ValueError(f"Record not found for filter: {filter_by}")
-            extracted_result = result["Address"].__dict__ if "Address" in result else result
 
-            return extracted_result
+            return self.schema.model_validate(model_obj, from_attributes=True)
 
-    async def update_one(self, id: int, data: dict) -> dict:
+    async def update_one(self, id: int, model_update: BaseModel) -> BaseModel:
         """Обновляет запись по ее id"""
         async with db_helper.session_factory() as session:
-            columns = [col for col in self.model.__table__.columns]
             stmt = (
                 update(self.model)
                 .where(self.model.id == id)
-                .values(**data)
-                .returning(*columns)
+                .values(**model_update.model_dump(exclude_unset=True))
+                .returning(self.model)
             )
-            res = await session.execute(stmt)
+            result = await session.execute(stmt)
             await session.commit()
-            result = res.mappings().one_or_none()
+            model_obj = result.scalar_one_or_none()
 
-            if result is None:
+            if model_obj is None:
                 raise ValueError(f"Record with id {id} not found")
 
-            return result
+            return self.schema.model_validate(model_obj, from_attributes=True)
 
     async def delete_one(self, id: int) -> None:
         """Удаляет запись по её id и возвращает id удалённой записи"""
