@@ -52,7 +52,7 @@ const AddStation = ({ onAddStation }) => {
           name="tax_id"
           value={newStation.tax_id}
           onChange={handleInputChange}
-          placeholder="Tax ID"
+          placeholder="ИНН (12 цифр)"
           required
         />
         <input
