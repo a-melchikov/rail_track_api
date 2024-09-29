@@ -139,21 +139,31 @@ const StationList = () => {
                   }
                   placeholder="ID адреса"
                 />
-                <button onClick={handleUpdateStation}>Сохранить</button>
-                <button onClick={() => setEditingStationId(null)}>
-                  Отмена
-                </button>
+                <div>
+                  <button onClick={handleUpdateStation}>Сохранить</button>
+                  <button onClick={() => setEditingStationId(null)}>
+                    Отмена
+                  </button>
+                </div>
               </div>
             ) : (
               <div>
                 <strong>ID: {station.id}</strong> - Название: {station.name},
                 ИНН: {station.tax_id}, Адрес: {station.address_id}
-                <button onClick={() => handleEditStation(station.id)}>
-                  Редактировать
-                </button>
-                <button onClick={() => handleDeleteStation(station.id)}>
-                  Удалить
-                </button>
+                <div>
+                  <button
+                    className="top-button button-spacing"
+                    onClick={() => handleEditStation(station.id)}
+                  >
+                    Редактировать
+                  </button>
+                  <button
+                    className="bottom-button button-spacing"
+                    onClick={() => handleDeleteStation(station.id)}
+                  >
+                    Удалить
+                  </button>
+                </div>
               </div>
             )}
           </li>

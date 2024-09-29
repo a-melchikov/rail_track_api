@@ -37,7 +37,7 @@ const AddStation = ({ onAddStation }) => {
 
   return (
     <div className="form-container">
-      <h3>Добавить новый вокзал</h3>
+      <h3>Добавить вокзал</h3>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -63,7 +63,7 @@ const AddStation = ({ onAddStation }) => {
           placeholder="ID адреса"
           required
         />
-        <button type="submit">Добавить вокзал</button>
+        <button type="submit">Добавить</button>
       </form>
     </div>
   );

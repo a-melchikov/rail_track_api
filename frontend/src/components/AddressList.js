@@ -163,22 +163,32 @@ const AddressList = () => {
                   }
                   placeholder="Квартира"
                 />
-                <button onClick={handleUpdateAddress}>Сохранить</button>
-                <button onClick={() => setEditingAddressId(null)}>
-                  Отмена
-                </button>
+                <div>
+                  <button onClick={handleUpdateAddress}>Сохранить</button>
+                  <button onClick={() => setEditingAddressId(null)}>
+                    Отмена
+                  </button>
+                </div>
               </div>
             ) : (
               <div>
                 <strong>ID: {address.id}</strong> - Адрес: {address.country}, г.{" "}
                 {address.city}, ул. {address.street}, д. {address.house}, кв.{" "}
                 {address.apartment}
-                <button onClick={() => handleEditAddress(address.id)}>
-                  Редактировать
-                </button>
-                <button onClick={() => handleDeleteAddress(address.id)}>
-                  Удалить
-                </button>
+                <div>
+                  <button
+                    className="top-button"
+                    onClick={() => handleEditAddress(address.id)}
+                  >
+                    Редактировать
+                  </button>
+                  <button
+                    className="bottom-button"
+                    onClick={() => handleDeleteAddress(address.id)}
+                  >
+                    Удалить
+                  </button>
+                </div>
               </div>
             )}
           </li>
