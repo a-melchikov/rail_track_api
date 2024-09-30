@@ -1,5 +1,5 @@
-from db.repositories import AddressRepository, StationRepository
-from services import AddressService, StationService
+from db.repositories import AddressRepository, StationRepository, TrainTypeRepository
+from services import AddressService, StationService, TrainTypeService
 
 
 async def address_service():
@@ -8,3 +8,7 @@ async def address_service():
 
 async def station_service():
     return StationService(StationRepository)
+
+
+async def train_type_service():
+    return TrainTypeService(TrainTypeRepository)

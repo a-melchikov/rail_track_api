@@ -1,8 +1,8 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TrainTypeBase(BaseModel):
-    type_name: str
+    type_name: str = Field(..., max_length=100)
 
 
 class TrainTypeCreate(TrainTypeBase):
@@ -10,7 +10,7 @@ class TrainTypeCreate(TrainTypeBase):
 
 
 class TrainTypeUpdate(BaseModel):
-    type_name: str | None = None
+    type_name: str | None = Field(None, max_length=100)
 
 
 class TrainTypeOut(TrainTypeBase):
