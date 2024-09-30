@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from fastapi import Depends
 from db.repositories import AddressRepository, StationRepository, TrainTypeRepository
 from services import AddressService, StationService, TrainTypeService
 
@@ -12,3 +15,6 @@ async def station_service():
 
 async def train_type_service():
     return TrainTypeService(TrainTypeRepository)
+
+
+train_type_service_dependency = Annotated[TrainTypeService, Depends(train_type_service)]

@@ -82,7 +82,7 @@ class SQLAlchemyRepository(AbstractRepository):
             return self.schema.model_validate(model_obj, from_attributes=True)
 
     async def delete_one(self, id: int) -> None:
-        """Удаляет запись по её id и возвращает id удалённой записи"""
+        """Удаляет запись по её id"""
         async with db_helper.session_factory() as session:
             stmt = delete(self.model).where(self.model.id == id)
             res = await session.execute(stmt)
