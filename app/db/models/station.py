@@ -28,7 +28,7 @@ class Station(Base):
     )
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}(station_id={self.id}, name={self.name}, tax_id={self.tax_id}, address_id={self.address_id})"
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, tax_id={self.tax_id}, address_id={self.address_id})"
 
     def __repr__(self) -> str:
         return str(self)
