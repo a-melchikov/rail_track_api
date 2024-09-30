@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from "react";
 import AddAddress from "./AddAddress";
+import Modal from "./Modal"; // Импортируйте модальное окно
 
 const AddressList = () => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [editingAddressId, setEditingAddressId] = useState(null); // Для отслеживания редактируемого адреса
-  const [editingAddress, setEditingAddress] = useState({}); // Для хранения редактируемого адреса
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [editingAddress, setEditingAddress] = useState({});
+
+  // Состояние для модального окна
+  const [modalMessage, setModalMessage] = useState(null);
+
+  const handleError = (error) => {
+    console.error(error);
+    setModalMessage(error.message);
+  };
 
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
         const response = await fetch("http://localhost:8000/api/v1/addresses/");
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Не удалось загрузить адреса");
         }
         const data = await response.json();
         setAddresses(data);
       } catch (error) {
-        setError(error.message);
+        handleError(error);
       } finally {
         setLoading(false);
       }
@@ -41,20 +49,18 @@ const AddressList = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Не удалось удалить адрес");
       }
 
-      // Обновление списка адресов после удаления
       setAddresses((prevAddresses) =>
         prevAddresses.filter((address) => address.id !== id)
       );
     } catch (error) {
-      console.error("Ошибка при удалении адреса:", error);
+      handleError(error);
     }
   };
 
   const handleEditAddress = (id) => {
-    // Найдем адрес для редактирования и установим его в состояние
     const addressToEdit = addresses.find((address) => address.id === id);
     setEditingAddressId(id);
     setEditingAddress({ ...addressToEdit });
@@ -74,7 +80,7 @@ const AddressList = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Не удалось обновить адрес");
       }
 
       const updatedAddress = await response.json();
@@ -84,25 +90,25 @@ const AddressList = () => {
         )
       );
 
-      setEditingAddressId(null); // Сбрасываем редактируемый адрес
+      setEditingAddressId(null);
       setEditingAddress({});
     } catch (error) {
-      console.error("Ошибка при обновлении адреса:", error);
+      handleError(error);
     }
+  };
+
+  const closeModal = () => {
+    setModalMessage(null);
   };
 
   if (loading) {
     return <div>Загрузка...</div>;
   }
 
-  if (error) {
-    return <div>Ошибка: {error}</div>;
-  }
-
   return (
     <div className="container">
       <h2>Список адресов</h2>
-      <AddAddress onAdd={handleAddAddress} />
+      <AddAddress onAdd={handleAddAddress} setModalMessage={setModalMessage} />
       <ul>
         {addresses.map((address) => (
           <li key={address.id}>
@@ -110,7 +116,7 @@ const AddressList = () => {
               <div>
                 <input
                   type="text"
-                  value={editingAddress.country}
+                  value={editingAddress.country || ""}
                   onChange={(e) =>
                     setEditingAddress({
                       ...editingAddress,
@@ -121,7 +127,7 @@ const AddressList = () => {
                 />
                 <input
                   type="text"
-                  value={editingAddress.city}
+                  value={editingAddress.city || ""}
                   onChange={(e) =>
                     setEditingAddress({
                       ...editingAddress,
@@ -132,7 +138,7 @@ const AddressList = () => {
                 />
                 <input
                   type="text"
-                  value={editingAddress.street}
+                  value={editingAddress.street || ""}
                   onChange={(e) =>
                     setEditingAddress({
                       ...editingAddress,
@@ -143,7 +149,7 @@ const AddressList = () => {
                 />
                 <input
                   type="text"
-                  value={editingAddress.house}
+                  value={editingAddress.house || ""}
                   onChange={(e) =>
                     setEditingAddress({
                       ...editingAddress,
@@ -154,7 +160,7 @@ const AddressList = () => {
                 />
                 <input
                   type="text"
-                  value={editingAddress.apartment}
+                  value={editingAddress.apartment || ""}
                   onChange={(e) =>
                     setEditingAddress({
                       ...editingAddress,
@@ -194,6 +200,7 @@ const AddressList = () => {
           </li>
         ))}
       </ul>
+      {modalMessage && <Modal message={modalMessage} onClose={closeModal} />}
     </div>
   );
 };

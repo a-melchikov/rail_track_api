@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from "react";
 import AddStation from "./AddStation";
+import Modal from "./Modal";
 
 const StationList = () => {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [editingStationId, setEditingStationId] = useState(null); // Для отслеживания редактируемого вокзала
-  const [editingStation, setEditingStation] = useState({}); // Для хранения редактируемого вокзала
+  const [editingStationId, setEditingStationId] = useState(null);
+  const [editingStation, setEditingStation] = useState({});
+  const [modalMessage, setModalMessage] = useState(""); // Состояние для сообщения модального окна
+
+  const handleError = (error) => {
+    console.error(error);
+    setModalMessage(error.message);
+  };
 
   useEffect(() => {
     const fetchStations = async () => {
       try {
         const response = await fetch("http://localhost:8000/api/v1/stations/");
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Не удалось загрузить вокзалы");
         }
         const data = await response.json();
         setStations(data);
       } catch (error) {
-        setError(error.message);
+        handleError(error);
       } finally {
         setLoading(false);
       }
@@ -41,14 +47,14 @@ const StationList = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Не удалось удалить вокзал");
       }
 
       setStations((prevStations) =>
         prevStations.filter((station) => station.id !== id)
       );
     } catch (error) {
-      console.error("Ошибка при удалении вокзала:", error);
+      handleError(error);
     }
   };
 
@@ -72,7 +78,7 @@ const StationList = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Не удалось обновить вокзал");
       }
 
       const updatedStation = await response.json();
@@ -85,22 +91,25 @@ const StationList = () => {
       setEditingStationId(null);
       setEditingStation({});
     } catch (error) {
-      console.error("Ошибка при обновлении вокзала:", error);
+      handleError(error);
     }
+  };
+
+  const handleCloseModal = () => {
+    setModalMessage(""); // Закрываем модальное окно
   };
 
   if (loading) {
     return <div>Загрузка...</div>;
   }
 
-  if (error) {
-    return <div>Ошибка: {error}</div>;
-  }
-
   return (
     <div className="container">
       <h2>Список вокзалов</h2>
-      <AddStation onAddStation={handleAddStation} />
+      <AddStation
+        onAddStation={handleAddStation}
+        setModalMessage={setModalMessage}
+      />
       <ul>
         {stations.map((station) => (
           <li key={station.id}>
@@ -108,7 +117,7 @@ const StationList = () => {
               <div>
                 <input
                   type="text"
-                  value={editingStation.name}
+                  value={editingStation.name || ""}
                   onChange={(e) =>
                     setEditingStation({
                       ...editingStation,
@@ -119,7 +128,7 @@ const StationList = () => {
                 />
                 <input
                   type="text"
-                  value={editingStation.tax_id}
+                  value={editingStation.tax_id || ""}
                   onChange={(e) =>
                     setEditingStation({
                       ...editingStation,
@@ -130,7 +139,7 @@ const StationList = () => {
                 />
                 <input
                   type="text"
-                  value={editingStation.address_id}
+                  value={editingStation.address_id || ""}
                   onChange={(e) =>
                     setEditingStation({
                       ...editingStation,
@@ -169,6 +178,10 @@ const StationList = () => {
           </li>
         ))}
       </ul>
+      {modalMessage && (
+        <Modal message={modalMessage} onClose={handleCloseModal} />
+      )}{" "}
+      {/* Добавляем модальное окно */}
     </div>
   );
 };

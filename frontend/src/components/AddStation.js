@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const AddStation = ({ onAddStation }) => {
+const AddStation = ({ onAddStation, setModalMessage }) => {
   const [newStation, setNewStation] = useState({
     name: "",
     tax_id: "",
@@ -24,21 +24,28 @@ const AddStation = ({ onAddStation }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorData = await response.json();
+        // Обработка ошибок из JSON-ответа
+        const errorMessages = errorData.detail
+          .map((error) => error.msg)
+          .join(", ");
+        throw new Error(errorMessages || "Не удалось добавить вокзал");
       }
 
       const createdStation = await response.json();
       onAddStation(createdStation);
-      setNewStation({ name: "", tax_id: "", address_id: "" }); // сброс формы
+      setModalMessage("Вокзал успешно добавлен!"); // Устанавливаем сообщение для модального окна
+      setNewStation({ name: "", tax_id: "", address_id: "" }); // Сброс формы
     } catch (error) {
       console.error("Ошибка при добавлении вокзала:", error);
+      setModalMessage(error.message); // Устанавливаем сообщение об ошибке
     }
   };
 
   return (
     <div className="form-container">
-      <h3>Добавить вокзал</h3>
       <form onSubmit={handleSubmit}>
+        <h3>Добавить вокзал</h3>
         <input
           type="text"
           name="name"
@@ -63,7 +70,7 @@ const AddStation = ({ onAddStation }) => {
           placeholder="ID адреса"
           required
         />
-        <button type="submit">Добавить</button>
+        <button type="submit">Добавить вокзал</button>
       </form>
     </div>
   );

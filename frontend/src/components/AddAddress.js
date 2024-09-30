@@ -1,7 +1,6 @@
-// src/components/AddAddress.js
 import React, { useState } from "react";
 
-const AddAddress = ({ onAdd }) => {
+const AddAddress = ({ onAdd, setModalMessage }) => {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
   const [street, setStreet] = useState("");
@@ -22,10 +21,17 @@ const AddAddress = ({ onAdd }) => {
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorData = await response.json();
+        // Обработка ошибок из JSON-ответа
+        const errorMessages = errorData.detail
+          .map((error) => error.msg)
+          .join(", ");
+        throw new Error(errorMessages || "Не удалось добавить адрес");
       }
 
-      onAdd(newAddress);
+      const createdAddress = await response.json(); // Получаем созданный адрес из ответа
+      onAdd(createdAddress); // Передаем созданный адрес в родительский компонент
+
       // Очистка формы
       setCountry("");
       setCity("");
@@ -33,7 +39,7 @@ const AddAddress = ({ onAdd }) => {
       setHouse("");
       setApartment("");
     } catch (error) {
-      console.error("Ошибка при добавлении адреса:", error);
+      setModalMessage(error.message); // Устанавливаем сообщение для модального окна
     }
   };
 
@@ -75,7 +81,7 @@ const AddAddress = ({ onAdd }) => {
           value={apartment}
           onChange={(e) => setApartment(e.target.value)}
         />
-        <button type="submit">Добавить</button>
+        <button type="submit">Добавить адрес</button>
       </form>
     </div>
   );
