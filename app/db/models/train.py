@@ -1,0 +1,25 @@
+from typing import TYPE_CHECKING
+from sqlalchemy import ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from db import Base
+
+if TYPE_CHECKING:
+    from db import Station, TrainType
+
+
+class Train(Base):
+    name: Mapped[str] = mapped_column(String(255), unique=True)
+    station_id: Mapped[int] = mapped_column(
+        ForeignKey("stations.id", ondelete="CASCADE", onupdate="CASCADE")
+    )
+    train_type_id: Mapped[int] = mapped_column(ForeignKey("train_types.id"))
+
+    station: Mapped["Station"] = relationship(back_populates="trains")
+    train_type: Mapped["TrainType"] = relationship(back_populates="trains")
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}(id={self.id}, name={self.name}, station_id={self.station_id}, train_type_id={self.train_type_id}"
+
+    def __repr__(self) -> str:
+        return str(self)
