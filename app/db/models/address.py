@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from sqlalchemy import String
@@ -19,7 +20,7 @@ class Address(IdMixin, Base):
     house: Mapped[str | None] = mapped_column(String(10))
     apartment: Mapped[str | None] = mapped_column(String(10))
 
-    stations: Mapped["Station"] = relationship(
+    stations: Mapped[Station] = relationship(
         back_populates="address",
         cascade="all, delete",
     )

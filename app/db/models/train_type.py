@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from sqlalchemy import String
@@ -15,7 +16,7 @@ class TrainType(IdMixin, Base):
 
     type_name: Mapped[str] = mapped_column(String(100), unique=True)
 
-    trains: Mapped[list["Train"]] = relationship(back_populates="train_type")
+    trains: Mapped[list[Train]] = relationship(back_populates="train_type")
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, type_name={self.type_name}"
