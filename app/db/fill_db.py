@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select
 
-from db import Address, Station, Train, TrainType, TrainStation
+from db import Address, Station, Train, TrainType, TrainStationAssociation
 from db.session import db_helper
 
 fake = Faker()
@@ -108,7 +108,7 @@ async def create_random_train_stations(num: int, session: AsyncSession):
 
         for station in assigned_stations:
             train_stations.append(
-                TrainStation(train_id=train.id, station_id=station.id)
+                TrainStationAssociation(train_id=train.id, station_id=station.id)
             )
 
     session.add_all(train_stations)

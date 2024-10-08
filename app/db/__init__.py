@@ -6,6 +6,7 @@ __all__ = [
     "Station",
     "TrainType",
     "Train",
+    "TrainStationAssociation",
 ]
 
 from .session import db_helper, DatabaseHelper
@@ -14,3 +15,4 @@ from .models.address import Address
 from .models.station import Station
 from .models.train_type import TrainType
 from .models.train import Train
+from .models.train_station_association import TrainStationAssociation
