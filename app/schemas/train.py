@@ -1,6 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-from schemas.station import StationOut
 from schemas.train_type import TrainTypeOut
 
 

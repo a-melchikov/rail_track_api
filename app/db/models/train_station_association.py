@@ -1,10 +1,7 @@
-from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from db import Base
+from sqlalchemy.orm import Mapped, mapped_column
 
-if TYPE_CHECKING:
-    from db import Train, Station
+from db import Base
 
 
 class TrainStationAssociation(Base):
