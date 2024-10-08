@@ -20,3 +20,4 @@ from .models.train import Train
 from .models.train_station_association import TrainStationAssociation
 from .models.position import Position
 from .models.crew_directory import CrewDirectory
+from .models.personnel import Personnel
