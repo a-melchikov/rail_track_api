@@ -13,9 +13,6 @@ if TYPE_CHECKING:
 
 class Train(IdMixin, Base):
     name: Mapped[str] = mapped_column(String(255), unique=True)
-    station_id: Mapped[int] = mapped_column(
-        ForeignKey("stations.id", ondelete="CASCADE", onupdate="CASCADE")
-    )
     train_type_id: Mapped[int] = mapped_column(ForeignKey("train_types.id"))
 
     stations: Mapped[list[Station]] = relationship(
