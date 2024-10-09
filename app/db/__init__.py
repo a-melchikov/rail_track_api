@@ -9,6 +9,8 @@ __all__ = [
     "TrainStationAssociation",
     "Position",
     "CrewDirectory",
+    "Personnel",
+    "Route",
 ]
 
 from .session import db_helper, DatabaseHelper
@@ -21,3 +23,4 @@ from .models.train_station_association import TrainStationAssociation
 from .models.position import Position
 from .models.crew_directory import CrewDirectory
 from .models.personnel import Personnel
+from .models.route import Route

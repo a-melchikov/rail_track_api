@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import String, CHAR, ForeignKey, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from db import Base
 
 if TYPE_CHECKING:

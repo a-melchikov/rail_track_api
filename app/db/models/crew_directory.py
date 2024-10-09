@@ -8,7 +8,7 @@ from db import Base
 from db.mixins import IdMixin
 
 if TYPE_CHECKING:
-    from db import Personnel
+    from db import Personnel, Route
 
 
 class CrewDirectory(IdMixin, Base):
@@ -17,6 +17,7 @@ class CrewDirectory(IdMixin, Base):
     crew_name: Mapped[str] = mapped_column(String(255), unique=True)
 
     personnel: Mapped[list[Personnel]] = relationship(back_populates="crew")
+    routes: Mapped[list[Route]] = relationship(back_populates="crew")
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}(id={self.id}, crew_name={self.crew_name})"
