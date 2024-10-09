@@ -9,7 +9,7 @@ from db.mixins import IdMixin
 
 
 if TYPE_CHECKING:
-    from db import Address, Train, Personnel, Route
+    from db import Address, Train, Personnel, Route, RouteDetail
 
 
 class Station(IdMixin, Base):
@@ -47,6 +47,9 @@ class Station(IdMixin, Base):
     arrival_routes: Mapped[list[Route]] = relationship(
         foreign_keys="[Route.arrival_station_id]",
         back_populates="arrival_station",
+    )
+    stop_details: Mapped[list[RouteDetail]] = relationship(
+        back_populates="stop_station"
     )
 
     def __str__(self) -> str:

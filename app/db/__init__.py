@@ -11,6 +11,7 @@ __all__ = [
     "CrewDirectory",
     "Personnel",
     "Route",
+    "RouteDetail",
 ]
 
 from .session import db_helper, DatabaseHelper
@@ -24,3 +25,4 @@ from .models.position import Position
 from .models.crew_directory import CrewDirectory
 from .models.personnel import Personnel
 from .models.route import Route
+from .models.route_detail import RouteDetail
